@@ -1,28 +1,26 @@
 import pytest
 import requests
+from asserts import *
+
+
+
 
 def test_get():
-    response = requests.get('https://jsonplaceholder.typicode.com/posts')
-    user = response.json()[0]
-    #assert response.status_code == 200, f'Status code is not 200, it is {response.status_code}'
-    assert isinstance(response.json(), list), f'Type is not list, it is {type(response.json())}'
-    #assert 'userId' in user and 'id' in user and 'title' in user and 'body' in user, f'Item is not in {user}'
+    response_get = requests.get(f'{base_url}/posts')
+    check_status_code_success(response_get)
+    check_type_list(response_get)
+    check_post_struct()
 
 def test_post():
-    add_user = {'userId':1,'title':'Qwerty','body':'Zxcvb'}
-    response_post = requests.post('https://jsonplaceholder.typicode.com/posts', json=add_user)
-    user = response_post.json()
-    #response_get = requests.get(f'https://jsonplaceholder.typicode.com/posts/{response_post.json()["id"]}')
-    assert response_post.status_code == 201, f'Status code is not 201, it is {response_post.status_code}'
-    #assert user == response_get.json(), 'User is not in json'
-    assert 'id' in user and user['userId'] == 1 and user['title'] == 'Qwerty' and user['body'] == 'Zxcvb', 'Data does not exist'
+    response_post = requests.post(f'{base_url}/posts', json=new_post.model_dump())
+    check_status_code_created(response_post)
+    check_post_created(response_post)
 
 def test_put():
-    response_put = requests.put('https://jsonplaceholder.typicode.com/posts/1', data={'userId': 11, 'id':11, 'title': 'QweQwe', 'body': 'RtyRty'})
-    user = response_put.json()
-    assert  response_put.status_code == 200, f'Status code is not 200, it is {response_put.status_code}'
-    assert user['title'] == 'QweQwe' and user['id'] == 1 and user['body'] == 'RtyRty' and 'userId' in user, f'Data has not been updated, {user}'
+    response_put = requests.put(f'{base_url}/posts/1', data=new_post.model_dump())
+    check_status_code_success(response_put)
+    check_post_changed(response_put)
 
 def test_delete():
-    response_delete = requests.delete('https://jsonplaceholder.typicode.com/posts/1')
-    assert response_delete.status_code == 200, f'Status code is not 200, it is {response_delete.status_code}'
+    response_delete = requests.delete(f'{base_url}/posts/1')
+    check_status_code_success(response_delete)
